@@ -128,11 +128,6 @@ def search_datasets(name):
     return jsonify(datasets)
 
 
-@app.route("/", methods=["GET", "POST"])
-def kek():
-    return "kek"
-
-
 @app.route("/users/change_<string:change_username>", methods=["GET", "POST"])
 @login_required
 def change_user(change_username):
