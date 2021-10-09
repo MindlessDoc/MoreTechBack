@@ -6,6 +6,7 @@ from forms import *
 from flask_cors import CORS
 from bson.objectid import ObjectId
 from datetime import timedelta
+from random import randint
 import re
 import os
 
@@ -28,11 +29,7 @@ collections_admins = client[db_name]["admins"]
 collections_users = client[db_name]["users"]
 collections_datasets = client[db_name]["datasets"]
 
-# collections_admins.insert_one({
-#     "username": "user",
-#     "password": generate_password_hash("user"),
-#     "role": "user"
-# })
+categories = ["Изображения", "Финансы", "География", "Персональные данные", "Дети и родители"]
 
 login = LoginManager(app)
 login.login_view = "login"
@@ -127,7 +124,7 @@ def edit_dataset(id):
         print(dataset_form)
 
         return redirect("/admin/datasets", code=302)
-    return render_template("admin/edit_dataset.html", dataset=dataset, dataset_form=dataset_form)
+    return render_template("admin/edit_dataset.html", dataset=dataset, dataset_form=dataset_form, categories=categories)
 
 
 @app.get("/search_datasets/<name>")
@@ -138,6 +135,14 @@ def search_datasets(name):
     for dataset in datasets:
         dataset["_id"] = str(dataset["_id"])
     return jsonify(datasets)
+
+
+@app.get("/random_dataset")
+def random_dataset():
+    datasets = list(collections_datasets.find())
+    dataset = datasets[randint(0, len(datasets) - 1)]
+    dataset["_id"] = str(dataset["_id"])
+    return jsonify(dataset)
 
 
 @app.route("/users/change_<string:change_username>", methods=["GET", "POST"])
