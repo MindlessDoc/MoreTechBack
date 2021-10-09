@@ -9,6 +9,16 @@
     {{ dataset_form.name(class="form-control", value = dataset["name"]) }}
   </div>
 
+  <div class="input-group mb-3">
+    <span class="input-group-text">{{ dataset_form.description.label }}</span>
+    {{ dataset_form.description(class="form-control", value = dataset["description"]) }}
+  </div>
+
+  <div class="input-group mb-3">
+    <span class="input-group-text">{{ dataset_form.access_role.label }}</span>
+    {{ dataset_form.access_role(class="form-control", value = dataset["access_role"]) }}
+  </div>
+
 
   <div class="mb-3">
     {{ dataset_form.submit(class="btn btn-success btn-md mb-2") }}

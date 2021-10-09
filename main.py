@@ -3,6 +3,7 @@ from pymongo import MongoClient
 from flask_login import login_required, login_user, current_user, UserMixin, LoginManager
 from werkzeug.security import generate_password_hash, check_password_hash
 from forms import *
+from flask_cors import CORS
 from bson.objectid import ObjectId
 from datetime import timedelta
 import re
@@ -11,6 +12,9 @@ app = Flask(__name__)
 
 app.config["SECRET_KEY"] = "86F27F78E9AA221425B98B46F337A"
 app.permanent_session_lifetime = timedelta(days=1)
+
+app = Flask(__name__)
+cors = CORS(app)
 
 client = MongoClient(
     "mongodb+srv://MindlessDoc:NfhrjdNjg228@cluster0.jlpdf.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
@@ -112,6 +116,12 @@ def edit_dataset(id):
             return redirect("/admin/datasets", code=302)
 
         dataset_form = request.form
+
+        collections_datasets.update_one({"_id": ObjectId(id)}, {"$set": {
+            "name": dataset_form["name"],
+            "description": dataset_form["description"],
+            "access_role": dataset_form["access_role"]
+        }})
         print(dataset_form)
 
         return redirect("/admin/datasets", code=302)
