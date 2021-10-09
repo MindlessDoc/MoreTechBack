@@ -156,7 +156,7 @@ def random_dataset():
     datasets = list(collections_datasets.find())
     dataset = datasets[randint(0, len(datasets) - 1)]
     dataset["_id"] = str(dataset["_id"])
-    return jsonify(dataset)
+    return dataset["name"]
 
 
 @app.route("/users/change_<string:change_username>", methods=["GET", "POST"])
