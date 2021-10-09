@@ -1,11 +1,11 @@
 {% extends 'admin/header.html' %}
 
 {% block content %}
-<div class="row">
-    {% for user in users%}
-  <div class="col-12 col-md-6 col-lg-4 mb-3" style="">
-    <a href='/admin/users/change_{{ user["username"] }}' class="d-flex flex-column card"
-       style="
+    <div class="row">
+        {% for user in users %}
+            <div class="col-12 col-md-6 col-lg-4 mb-3" style="">
+                <a href='/admin/users/change_{{ user["username"] }}' class="d-flex flex-column card"
+                   style="
              color: black;
              cursor: pointer;
              text-align: center;
@@ -16,20 +16,36 @@
              padding: 5px;
              margin: auto;
              height: 100%;"
-    >
-      <div
-          style="color: black; font-size: 18px; border-radius: 5px 5px 5px 5px;"
-      >
-        {{ user["name"] }} {{ user["surname"] }}
-      </div>
-        <div
-          style="color: black; font-size: 12px; border-radius: 5px 5px 5px 5px;"
-      >
-        ({{ user["role"] }})
-      </div>
-      </p>
-    </a>
-  </div>
-  {% endfor %}
-</div>
+                >
+                    <div
+                            style="color: black; font-size: 18px; border-radius: 5px 5px 5px 5px;"
+                    >
+                        {{ user["name"] }} {{ user["surname"] }}
+                    </div>
+                    <div
+                            style="color: black; font-size: 12px; border-radius: 5px 5px 5px 5px;"
+                    >
+                        <div>
+                            ({{ user["role"] }})
+                            <div>
+                                {% if  user["read_dataset"]%}
+                                    read_dataset: On,
+                                {% else %}
+                                    read_dataset: Off,
+                                {% endif %}
+                                {% if  user["change_dataset"]%}
+                                    change_dataset: On
+                                {% else %}
+                                    change_dataset: Off
+                                {% endif %}
+                            </div>
+
+                        </div>
+
+                    </div>
+                    </p>
+                </a>
+            </div>
+        {% endfor %}
+    </div>
 {% endblock %}
