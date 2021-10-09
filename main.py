@@ -6,6 +6,7 @@ from forms import *
 from flask_cors import CORS
 from bson.objectid import ObjectId
 from datetime import timedelta, datetime
+import time
 from random import randint
 import re
 import os
@@ -28,6 +29,8 @@ db_name = "MoreTech"
 collections_admins = client[db_name]["admins"]
 collections_users = client[db_name]["users"]
 collections_datasets = client[db_name]["datasets"]
+collections_tasks = client[db_name]["tasks"]
+
 
 categories = ["Изображения", "Финансы", "География", "Персональные данные", "Дети и родители"]
 types = ["Агрегация данных", "Необработанный датасет", "Сырые данные"]
@@ -139,7 +142,13 @@ def search_datasets(name):
     datasets = list(collections_datasets.find({"name": {'$regex': my_name}}))
     for dataset in datasets:
         dataset["_id"] = str(dataset["_id"])
-    return jsonify({"date": datetime.today(), "datasets": datasets})
+    current_time = time.time()
+    return jsonify({"date": time.time() - current_time, "datasets": datasets})
+
+
+@app.get("/search_dataset/<id>")
+def search_datasets(id):
+    return jsonify(collections_datasets.find_one({"_id": ObjectId(id)}))
 
 
 @app.get("/random_dataset")
@@ -164,7 +173,7 @@ def change_user(change_username):
             collections_users.update_one({"username": change_username}, {"$set": {"username": form.username.data,
                                                                                   "name": form.name.data,
                                                                                   "surname": form.surname.data,
-                                                                                  "role" : form.role.data}})
+                                                                                  "role": form.role.data}})
             return redirect(url_for('users'))
         return render_template('admin/change_user.html', title='Change_user', form=form)
     return "Несуществующий login пользователя"
@@ -173,6 +182,7 @@ def change_user(change_username):
 @app.get("/")
 def api_index():
     return "dataunion api v1.12"
+
 
 app.run(debug=True)
 # app.run(port=5021)
