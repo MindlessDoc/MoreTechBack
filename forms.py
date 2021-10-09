@@ -42,5 +42,6 @@ class DatasetForm(FlaskForm):
 
     categories = FieldList(IntegerField("Категории"))
     access_role = StringField("Роль для доступа")
+    type = SelectField("Тип")
 
     submit = SubmitField("Подтвердить")

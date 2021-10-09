@@ -30,6 +30,7 @@ collections_users = client[db_name]["users"]
 collections_datasets = client[db_name]["datasets"]
 
 categories = ["Изображения", "Финансы", "География", "Персональные данные", "Дети и родители"]
+types = ["Агрегация данных", "Необработанный датасет", "Сырые данные"]
 
 login = LoginManager(app)
 login.login_view = "login"
@@ -109,6 +110,8 @@ def datasets():
 def edit_dataset(id):
     dataset_form = DatasetForm()
     dataset = collections_datasets.find({"_id": ObjectId(id)})[0]
+    dataset_form.type.choices = types
+    dataset_form.type.data = dataset["type"]
 
     if dataset_form.validate_on_submit():
         if "delete" in request.form:
@@ -121,7 +124,8 @@ def edit_dataset(id):
             "name": dataset_form["name"],
             "description": dataset_form["description"],
             "access_role": dataset_form["access_role"],
-            "categories": cats
+            "categories": cats,
+            "type": dataset_form["type"]
         }})
 
         return redirect("/admin/datasets", code=302)
@@ -168,7 +172,7 @@ def change_user(change_username):
 
 @app.get("/")
 def api_index():
-    return "dataunion api v1.1"
+    return "dataunion api v1.12"
 
 app.run(debug=True)
 # app.run(port=5021)

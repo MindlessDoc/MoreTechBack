@@ -29,6 +29,11 @@
     <label class="form-check-label">{{ category }}</label><br>
   {% endfor %}
 
+  <div class="input-group mb-3">
+    <span class="input-group-text">{{ dataset_form.type.label }}</span>
+    {{ dataset_form.type(class="form-control") }}
+  </div>
+
   <div class="mb-3">
     {{ dataset_form.submit(class="btn btn-success btn-md mb-2") }}
     <button type="button" class="btn btn-danger btn-md mb-2" data-bs-toggle="modal" data-bs-target="#delete">
