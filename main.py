@@ -16,25 +16,27 @@ client = MongoClient(
 
 db_name = "MoreTech"
 
+collections_admins = client[db_name]["admins"]
 collections_users = client[db_name]["users"]
 collections_datasets = client[db_name]["datasets"]
 
-# collections_users.insert_one({
+# collections_admins.insert_one({
 #     "username": "user",
 #     "password": generate_password_hash("user"),
 #     "role": "user"
 # })
 
 login = LoginManager(app)
-login.login_view = 'login'
+login.login_view = "login"
 login.init_app(app)
 
 
 class User(UserMixin):
-    def __init__(self, username, password, name, surname, role):
+    def __init__(self, id, username, password, name, surname, role):
         self.password_hash = password
         self.username = username
         self.name = name
+        self.id = id
         self.surname = surname
         self.role = role
 
@@ -47,9 +49,14 @@ class User(UserMixin):
     def get_role(self):
         return self.role
 
+    def get_id(self):
+        return self.username
+
     @login.user_loader
     def load_user(username):
-        return User("login", "password", "superuser")
+        loaded_user = collections_admins.find_one({"username": username})
+        return User(loaded_user["_id"], loaded_user["username"], loaded_user["password"], loaded_user["name"],
+                    loaded_user["surname"], loaded_user["role"])
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -60,10 +67,11 @@ def login():
     if form.is_submitted():
         name = form.username.data
         password = form.password.data
-        user_db_count = collections_users.count_documents({"username": name})
+        user_db_count = collections_admins.count_documents({"username": name})
         if user_db_count:
-            user_db = collections_users.find_one({"username": name})
-            user = User(user_db["username"], user_db["password"], 1)
+            user_db = collections_admins.find_one({"username": name})
+            user = User(user_db["_id"], user_db["username"], user_db["password"], user_db["name"],
+                        user_db["surname"], user_db["role"])
 
             if user is not None and user.check_password(password):
                 login_user(user)
@@ -78,8 +86,10 @@ def login():
 def index():
     return current_user.get_role()
 
+
 @app.route("/users", methods=["GET", "POST"])
 def user():
     return render_template("users/users.html", users=collections_users.find())
+
 
 app.run(debug=True)
