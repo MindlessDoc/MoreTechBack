@@ -7,6 +7,7 @@ from flask_cors import CORS
 from bson.objectid import ObjectId
 from datetime import timedelta
 import re
+import os
 
 app = Flask(__name__)
 
@@ -15,6 +16,7 @@ app.permanent_session_lifetime = timedelta(days=1)
 
 app = Flask(__name__)
 cors = CORS(app)
+app.secret_key = os.urandom(24)
 
 client = MongoClient(
     "mongodb+srv://MindlessDoc:NfhrjdNjg228@cluster0.jlpdf.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"

@@ -3,7 +3,7 @@
 {% block content %}
 <form action="" method="post" novalidate enctype="multipart/form-data">
   {{ dataset_form.hidden_tag() }}
-  <h1 class="add-news-header">Изменить датасет</h1>
+  <h1 class="add-dataset-header">Изменить датасет</h1>
   <div class="input-group mb-3">
     <span class="input-group-text">{{ dataset_form.name.label }}</span>
     {{ dataset_form.name(class="form-control", value = dataset["name"]) }}
@@ -23,7 +23,7 @@
   <div class="mb-3">
     {{ dataset_form.submit(class="btn btn-success btn-md mb-2") }}
     <button type="button" class="btn btn-danger btn-md mb-2" data-bs-toggle="modal" data-bs-target="#delete">
-      Удалить новость
+      Удалить датасет
     </button>
     <div class="modal fade" id="delete" tabindex="-1" aria-labelledby="delete" aria-hidden="true">
       <div class="modal-dialog">
