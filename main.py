@@ -7,6 +7,7 @@ from flask_cors import CORS
 from bson.objectid import ObjectId
 from datetime import timedelta, datetime
 import time
+import jwt
 from random import randint
 import re
 import os
@@ -148,7 +149,9 @@ def search_datasets_by_name(name):
 
 @app.get("/search_dataset/<id>")
 def search_dataset_by_id(id):
-    return jsonify(collections_datasets.find_one({"_id": ObjectId(id)}))
+    dataset = collections_datasets.find_one({"_id": ObjectId(id)})
+    dataset["_id"] = str(dataset["_id"])
+    return jsonify(dataset)
 
 
 @app.get("/random_dataset")
@@ -176,13 +179,37 @@ def change_user(change_username):
                                                                                   "read_dataset": "read_dataset" in access_right_form,
                                                                                   "change_dataset": "change_dataset" in access_right_form}})
             return redirect(url_for('users'))
-        return render_template('admin/change_user.html', title='Change_user', form=form, user=user_to_change, access_rights=access_rights)
+        return render_template('admin/change_user.html', title='Change_user', form=form, user=user_to_change,
+                               access_rights=access_rights)
     return "Несуществующий login пользователя"
+
+
+@app.get("/get_tasks")
+def get_tasks():
+    return collections_tasks.find()
 
 
 @app.get("/")
 def api_index():
     return "dataunion api v1.12"
+
+
+@app.post("/login_jwt")
+def login_jwt():
+    user_data = request.get_json()
+    login = user_data["login"]
+    password = user_data["password"]
+
+    if collections_users.count_documents({"username": login}):
+        if check_password_hash(collections_users.find_one({"username": login})["password"], password):
+            user = collections_users.find_one({"username": login})
+            encoded_jwt = jwt.encode({"role": user["role"], "name": user["name"], "surname": user["surname"],
+                                      "change_dataset": user["change_dataset"], "read_dataset": user["read_dataset"]},
+                                     "secret", algorithm="HS256")
+            print(encoded_jwt)
+            return encoded_jwt
+        return "Wrong password", 400
+    return "User not found", 403
 
 
 app.run(debug=True)
