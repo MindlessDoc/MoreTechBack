@@ -11,6 +11,13 @@ class UserForm(FlaskForm):
 
     submit = SubmitField("Войти")
 
+class ChangeUserForm(FlaskForm):
+    username = StringField('Логин')
+    name = StringField('Имя')
+    surname = StringField('Фамилия')
+
+    submit = SubmitField("Изменить")
+
 
 class DatasetForm(FlaskForm):
     id = IntegerField("Индентификатор")

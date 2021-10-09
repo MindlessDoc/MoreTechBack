@@ -1,4 +1,4 @@
-from flask import Flask, redirect, flash, render_template, url_for, jsonify, request
+from flask import Flask, redirect, flash, render_template, url_for
 from pymongo import MongoClient
 from flask_login import login_required, login_user, current_user, UserMixin, LoginManager
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -131,6 +131,26 @@ def search_datasets(name):
 @app.route("/", methods=["GET", "POST"])
 def kek():
     return "kek"
+
+
+@app.route("/users/change_<string:change_username>", methods=["GET", "POST"])
+@login_required
+def change_user(change_username):
+    change_user = collections_users.find_one({"username": change_username})
+
+    if (change_user):
+        form = ChangeUserForm(username=change_user["username"],
+                              name=change_user["name"],
+                              surname=change_user["surname"])
+
+        if form.is_submitted():
+            collections_users.update_one({"username": change_username}, {"$set": {"username": form.username.data,
+                                                                                  "name": form.name.data,
+                                                                                  "surname": form.surname.data}})
+            return redirect(url_for('users'))
+        return render_template('admin/change_user.html', title='Change_user', form=form)
+    else:
+        return "Несуществующий login пользователя"
 
 
 app.run(debug=True)
