@@ -20,8 +20,9 @@ collections_users = client[db_name]["users"]
 collections_datasets = client[db_name]["datasets"]
 
 # collections_users.insert_one({
-#     "username": "admin",
-#     "password": generate_password_hash("admin")
+#     "username": "user",
+#     "password": generate_password_hash("user"),
+#     "role": "user"
 # })
 
 login = LoginManager(app)
@@ -30,10 +31,10 @@ login.init_app(app)
 
 
 class User(UserMixin):
-    def __init__(self, username, password, id):
+    def __init__(self, username, password, role):
         self.password_hash = password
         self.username = username
-        self.id = id
+        self.role = role
 
     def get_username(self):
         return self.username
@@ -41,9 +42,12 @@ class User(UserMixin):
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
 
+    def get_role(self):
+        return self.role
+
     @login.user_loader
     def load_user(username):
-        return User("login", "password", 1)
+        return User("login", "password", "superuser")
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -70,7 +74,7 @@ def login():
 @app.route("/admin", methods=["GET", "POST"])
 @login_required
 def index():
-    return "Keki"
+    return current_user.get_role()
 
 
 app.run(debug=True)
