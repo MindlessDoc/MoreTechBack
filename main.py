@@ -5,7 +5,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from forms import *
 from flask_cors import CORS
 from bson.objectid import ObjectId
-from datetime import timedelta
+from datetime import timedelta, datetime
 from random import randint
 import re
 import os
@@ -135,7 +135,7 @@ def search_datasets(name):
     datasets = list(collections_datasets.find({"name": {'$regex': my_name}}))
     for dataset in datasets:
         dataset["_id"] = str(dataset["_id"])
-    return jsonify(datasets)
+    return jsonify({"date": datetime.today(), "datasets": datasets})
 
 
 @app.get("/random_dataset")
