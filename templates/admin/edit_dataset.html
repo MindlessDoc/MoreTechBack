@@ -20,8 +20,12 @@
   </div>
 
   <h4>Категории</h4>
-  {% for category in dataset["categories"] %}
-    <input type="checkbox" class="form-check-input mb-3">
+  {% for category in categories %}
+    {% if category in dataset["categories"] %}
+      <input type="checkbox" class="form-check-input mb-3" name="{{ category }}" checked>
+    {% else %}
+      <input type="checkbox" class="form-check-input mb-3" name="{{ category }}">
+    {% endif %}
     <label class="form-check-label">{{ category }}</label><br>
   {% endfor %}
 

@@ -109,19 +109,20 @@ def datasets():
 def edit_dataset(id):
     dataset_form = DatasetForm()
     dataset = collections_datasets.find({"_id": ObjectId(id)})[0]
+
     if dataset_form.validate_on_submit():
         if "delete" in request.form:
             collections_datasets.remove({"_id": ObjectId(id)})
             return redirect("/admin/datasets", code=302)
 
         dataset_form = request.form
-
+        cats = [category for category in categories if category in dataset_form]
         collections_datasets.update_one({"_id": ObjectId(id)}, {"$set": {
             "name": dataset_form["name"],
             "description": dataset_form["description"],
-            "access_role": dataset_form["access_role"]
+            "access_role": dataset_form["access_role"],
+            "categories": cats
         }})
-        print(dataset_form)
 
         return redirect("/admin/datasets", code=302)
     return render_template("admin/edit_dataset.html", dataset=dataset, dataset_form=dataset_form, categories=categories)
