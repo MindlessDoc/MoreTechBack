@@ -162,7 +162,7 @@ def change_user(change_username):
 
 @app.get("/")
 def api_index():
-    return "dataunion api v1.0"
+    return "dataunion api v1.1"
 
 app.run(debug=True)
 # app.run(port=5021)
