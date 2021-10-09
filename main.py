@@ -89,7 +89,7 @@ def index():
 
 @app.route("/users", methods=["GET", "POST"])
 def user():
-    return render_template("users/users.html", users=collections_users.find())
+    return render_template("admin/users.html", users=collections_users.find())
 
 
 app.run(debug=True)
