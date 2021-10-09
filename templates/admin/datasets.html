@@ -1,0 +1,45 @@
+{% extends 'admin/header.html' %}
+
+{% block content %}
+<div class="row">
+  {% for dataset in datasets %}
+  <div class="col-12 col-md-6 col-lg-4 mb-3" style="">
+    <a href="edit_dataset/{{ dataset._id }}" class="d-flex flex-column card"
+       style="
+             color: black;
+             cursor: pointer;
+             text-align: center;
+             background-color: #d9d9d9;
+             position: relative;
+             border-radius: 5px 5px 5px 5px;
+             text-decoration: none;
+             padding: 5px;
+             margin: auto;
+             height: 100%;"
+    >
+      <div
+          style="color: black; font-size: 18px; border-radius: 5px 5px 5px 5px;"
+      >
+        {% if dataset.name|length > 55 %}
+        {{ dataset.name[:55] }}...
+        {% else %}
+        {{ dataset.name }}
+        {% endif %}
+      </div>
+
+      <div class="new-text text-start p-3">
+        {% if dataset.description|length > 140 %}
+        {{ dataset.description[:140] }}...
+        {% else %}
+        {{ dataset.description }}
+        {% endif %}
+      </div>
+
+      <p class="text-end news-date mt-2">
+        {{ dataset.creation_date.strftime("%d.%m.%Y %X") }}
+      </p>
+    </a>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

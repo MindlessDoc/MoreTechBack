@@ -1,9 +1,11 @@
-from flask import Flask, redirect, flash, render_template, url_for
+from flask import Flask, redirect, flash, render_template, url_for, jsonify, request
 from pymongo import MongoClient
 from flask_login import login_required, login_user, current_user, UserMixin, LoginManager
 from werkzeug.security import generate_password_hash, check_password_hash
 from forms import *
+from bson.objectid import ObjectId
 from datetime import timedelta
+import re
 
 app = Flask(__name__)
 
@@ -75,7 +77,7 @@ def login():
 
             if user is not None and user.check_password(password):
                 login_user(user)
-                return redirect("admin/")
+                return redirect("admin/datasets")
         flash('Invalid username or password')
         return redirect(url_for('login'))
     return render_template('admin/login.html', title='Sign In', form=form)
@@ -87,9 +89,48 @@ def index():
     return current_user.get_role()
 
 
-@app.route("/users", methods=["GET", "POST"])
-def user():
-    return render_template("admin/users.html", users=collections_users.find())
+@app.get("/admin/users")
+@login_required
+def users():
+    return render_template("/admin/users.html", users=collections_users.find())
+
+
+@app.get("/admin/datasets")
+@login_required
+def datasets():
+    return render_template("/admin/datasets.html", datasets=collections_datasets.find())
+
+
+@app.route('/admin/edit_dataset/<id>', methods=["GET", "POST"])
+@login_required
+def edit_dataset(id):
+    dataset_form = DatasetForm()
+    dataset = collections_datasets.find({"_id": ObjectId(id)})[0]
+    if dataset_form.validate_on_submit():
+        if "delete" in request.form:
+            collections_datasets.remove({"_id": ObjectId(id)})
+            return redirect("/admin/datasets", code=302)
+
+        dataset_form = request.form
+        print(dataset_form)
+
+        return redirect("/admin/datasets", code=302)
+    return render_template("admin/edit_dataset.html", dataset=dataset, dataset_form=dataset_form)
+
+
+@app.get("/search_datasets/<name>")
+def search_datasets(name):
+    my_name = re.compile(f"^{name}.*", re.I)
+
+    datasets = list(collections_datasets.find({"name": {'$regex': my_name}}))
+    for dataset in datasets:
+        dataset["_id"] = str(dataset["_id"])
+    return jsonify(datasets)
+
+
+@app.route("/", methods=["GET", "POST"])
+def kek():
+    return "kek"
 
 
 app.run(debug=True)

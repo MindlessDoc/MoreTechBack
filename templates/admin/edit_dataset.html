@@ -1,0 +1,37 @@
+{% extends 'admin/header.html' %}
+
+{% block content %}
+<form action="" method="post" novalidate enctype="multipart/form-data">
+  {{ dataset_form.hidden_tag() }}
+      <h1 class="add-news-header">Изменить датасет</h1>
+      <div class="input-group mb-3">
+        <span class="input-group-text">{{ dataset_form.name.label }}</span>
+        {{ dataset_form.name(class="form-control", value = dataset["name"]) }}
+      </div>
+
+
+      <div class="mb-3">
+        {{ dataset_form.submit(class="btn btn-success btn-md mb-2") }}
+        <button type="button" class="btn btn-danger btn-md mb-2" data-bs-toggle="modal" data-bs-target="#delete">
+          Удалить новость
+        </button>
+        <div class="modal fade" id="delete" tabindex="-1" aria-labelledby="delete" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="deleteLabel">Подтверждение действия</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                Вы действительно хотите удалить датасет?
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Нет</button>
+                <button type="submit" class="btn btn-primary" name="delete">Да</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+</form>
+{% endblock %}

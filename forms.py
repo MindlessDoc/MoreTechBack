@@ -10,3 +10,26 @@ class UserForm(FlaskForm):
     password = StringField('Пароль', widget=PasswordInput(hide_value=False))
 
     submit = SubmitField("Войти")
+
+
+class DatasetForm(FlaskForm):
+    id = IntegerField("Индентификатор")
+
+    name = StringField("Название")
+    description = StringField("Описание")
+
+    creation_date = DateField("Дата создания")
+    last_change_date = DateField("Дата последнего изменения")
+
+    score = FloatField("Оценка")
+    vote_count = IntegerField("Количество оценок")
+    views = IntegerField("Просмотры")
+
+    format = StringField("Формат")
+    string_count = IntegerField("Количество строк")
+    size = StringField("Размер")
+
+    categories = FieldList(IntegerField("Категории"))
+    access_role = StringField("Роль для доступа")
+
+    submit = SubmitField("Подтвердить")
