@@ -10,3 +10,10 @@ class UserForm(FlaskForm):
     password = StringField('Пароль', widget=PasswordInput(hide_value=False))
 
     submit = SubmitField("Войти")
+
+class ChangeUserForm(FlaskForm):
+    username = StringField('Логин')
+    name = StringField('Имя')
+    surname = StringField('Фамилия')
+
+    submit = SubmitField("Изменить")

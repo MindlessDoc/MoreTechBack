@@ -88,8 +88,29 @@ def index():
 
 
 @app.route("/users", methods=["GET", "POST"])
-def user():
+@login_required
+def users():
     return render_template("admin/users.html", users=collections_users.find())
+
+
+@app.route("/users/change_<string:change_username>", methods=["GET", "POST"])
+@login_required
+def change_user(change_username):
+    change_user = collections_users.find_one({"username": change_username})
+
+    if (change_user):
+        form = ChangeUserForm(username=change_user["username"],
+                              name=change_user["name"],
+                              surname=change_user["surname"])
+
+        if form.is_submitted():
+            collections_users.update_one({"username": change_username}, {"$set": {"username": form.username.data,
+                                                                                  "name": form.name.data,
+                                                                                  "surname": form.surname.data}})
+            return redirect(url_for('users'))
+        return render_template('admin/change_user.html', title='Change_user', form=form)
+    else:
+        return "Несуществующий login пользователя"
 
 
 app.run(debug=True)
