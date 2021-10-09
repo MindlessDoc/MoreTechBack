@@ -31,7 +31,6 @@ collections_users = client[db_name]["users"]
 collections_datasets = client[db_name]["datasets"]
 collections_tasks = client[db_name]["tasks"]
 
-
 categories = ["Изображения", "Финансы", "География", "Персональные данные", "Дети и родители"]
 types = ["Агрегация данных", "Необработанный датасет", "Сырые данные"]
 
@@ -153,10 +152,7 @@ def search_dataset_by_id(id):
 
 @app.get("/random_dataset")
 def random_dataset():
-    datasets = list(collections_datasets.find())
-    dataset = datasets[randint(0, len(datasets) - 1)]
-    dataset["_id"] = str(dataset["_id"])
-    return dataset["name"]
+    return jsonify(list(map(lambda x: x["name"], collections_datasets.aggregate([{"$sample": {"size": 5}}]))))
 
 
 @app.route("/users/change_<string:change_username>", methods=["GET", "POST"])
