@@ -136,7 +136,7 @@ def edit_dataset(id):
 
 
 @app.get("/search_datasets/<name>")
-def search_datasets(name):
+def search_datasets_by_name(name):
     my_name = re.compile(f"^{name}.*", re.I)
 
     datasets = list(collections_datasets.find({"name": {'$regex': my_name}}))
@@ -147,7 +147,7 @@ def search_datasets(name):
 
 
 @app.get("/search_dataset/<id>")
-def search_datasets(id):
+def search_dataset_by_id(id):
     return jsonify(collections_datasets.find_one({"_id": ObjectId(id)}))
 
 
