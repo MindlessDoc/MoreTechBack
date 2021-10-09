@@ -136,13 +136,13 @@ def edit_dataset(id):
 
 @app.get("/search_datasets/<name>")
 def search_datasets_by_name(name):
+    current_time = time.time()
     my_name = re.compile(f"^{name}.*", re.I)
 
     datasets = list(collections_datasets.find({"name": {'$regex': my_name}}))
     for dataset in datasets:
         dataset["_id"] = str(dataset["_id"])
-    current_time = time.time()
-    return jsonify({"date": time.time() - current_time, "datasets": datasets})
+    return jsonify({"date": round(time.time() - current_time, 3), "datasets": datasets})
 
 
 @app.get("/search_dataset/<id>")
