@@ -1,29 +1,45 @@
 {% extends 'admin/header.html' %}
 
 {% block content %}
-<div class="container position-absolute top-50 start-50 translate-middle">
-  <form name="data" method="post">
-    <div class="d-flex flex-column">
-      <div style="margin: auto">
-        {{ form.username(class="input-group mb-3", style="width: 300px;", placeholder="Логин") }}
-      </div>
+    <div class="container position-absolute top-50 start-50 translate-middle">
+        <form name="data" method="post">
+            <div class="d-flex flex-column">
+                <div style="margin: auto">
+                    <h5>Логин</h5>
+                    {{ form.username(class="input-group mb-3", style="width: 300px;", placeholder="Логин") }}
+                </div>
 
-      <div style="margin: auto">
-        {{ form.name(class="input-group mb-3", style="width: 300px;", placeholder="Имя пользователя") }}
-      </div>
+                <div style="margin: auto">
+                    <h5>Имя пользователя</h5>
+                    {{ form.name(class="input-group mb-3", style="width: 300px;", placeholder="Имя пользователя") }}
+                </div>
 
-      <div style="margin: auto">
-        {{ form.surname(class="input-group mb-3", style="width: 300px;", placeholder="Фамилия пользователя") }}
-      </div>
+                <div style="margin: auto">
+                    <h5>Фамилия пользователя</h5>
+                    {{ form.surname(class="input-group mb-3", style="width: 300px;", placeholder="Фамилия пользователя") }}
+                </div>
 
-        <div style="margin: auto">
-        {{ form.role(class="input-group mb-3", style="width: 300px;", placeholder="Роль") }}
-      </div>
+                <div style="margin: auto">
+                    <h5>Роль</h5>
+                    {{ form.role(class="input-group mb-3", style="width: 300px;", placeholder="Роль") }}
+                </div>
 
-      <div style="text-align: center">
-        {{ form.submit(class="mb-3", style="width: 300px") }}
-      </div>
+                <div style="margin: auto; width: 300px", class="mb-3">
+                <h5>Права доступа</h5>
+                    {% for access_right in access_rights %}
+                        {% if user[access_right] %}
+                            <input type="checkbox" class="form-check-input mb-3" name="{{ access_right }}" checked>
+                        {% else %}
+                            <input type="checkbox" class="form-check-input mb-3" name="{{ access_right }}">
+                        {% endif %}
+                        <label class="form-check-label">{{ access_right }}</label><br>
+                    {% endfor %}
+                </div>
+
+                <div style="text-align: center">
+                    {{ form.submit(class="mb-3", style="width: 300px") }}
+                </div>
+            </div>
+        </form>
     </div>
-  </form>
-</div>
 {% endblock %}

@@ -33,6 +33,7 @@ collections_tasks = client[db_name]["tasks"]
 
 categories = ["Изображения", "Финансы", "География", "Персональные данные", "Дети и родители"]
 types = ["Агрегация данных", "Необработанный датасет", "Сырые данные"]
+access_rights = ["read_dataset", "change_dataset"]
 
 login = LoginManager(app)
 login.login_view = "login"
@@ -155,7 +156,7 @@ def random_dataset():
     return jsonify(list(map(lambda x: x["name"], collections_datasets.aggregate([{"$sample": {"size": 5}}]))))
 
 
-@app.route("/users/change_<string:change_username>", methods=["GET", "POST"])
+@app.route("/admin/users/change_<string:change_username>", methods=["GET", "POST"])
 @login_required
 def change_user(change_username):
     user_to_change = collections_users.find_one({"username": change_username})
@@ -165,13 +166,17 @@ def change_user(change_username):
                               name=user_to_change["name"],
                               surname=user_to_change["surname"])
 
+        access_right_form = request.form
+
         if form.is_submitted():
             collections_users.update_one({"username": change_username}, {"$set": {"username": form.username.data,
                                                                                   "name": form.name.data,
                                                                                   "surname": form.surname.data,
-                                                                                  "role": form.role.data}})
+                                                                                  "role": form.role.data,
+                                                                                  "read_dataset": "read_dataset" in access_right_form,
+                                                                                  "change_dataset": "change_dataset" in access_right_form}})
             return redirect(url_for('users'))
-        return render_template('admin/change_user.html', title='Change_user', form=form)
+        return render_template('admin/change_user.html', title='Change_user', form=form, user=user_to_change, access_rights=access_rights)
     return "Несуществующий login пользователя"
 
 

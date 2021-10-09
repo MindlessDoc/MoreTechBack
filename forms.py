@@ -4,6 +4,10 @@ from wtforms.validators import DataRequired
 from wtforms.widgets import PasswordInput
 
 
+class MultiCheckboxField(SelectMultipleField):
+    widget = widgets.ListWidget(prefix_label=False)
+    option_widget = widgets.CheckboxInput()
+
 class UserForm(FlaskForm):
     id = IntegerField("Индентификатор")
     username = StringField('Логин', validators=[DataRequired()])
