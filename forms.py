@@ -16,6 +16,9 @@ class ChangeUserForm(FlaskForm):
     username = StringField('Логин')
     name = StringField('Имя')
     surname = StringField('Фамилия')
+    role = SelectField(u'Asset type',
+                             choices=[('engineer', 'Engineer'),
+                                      ('project_manager', 'Project Manager')])
 
     submit = SubmitField("Изменить")
 

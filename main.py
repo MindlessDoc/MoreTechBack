@@ -158,7 +158,8 @@ def change_user(change_username):
         if form.is_submitted():
             collections_users.update_one({"username": change_username}, {"$set": {"username": form.username.data,
                                                                                   "name": form.name.data,
-                                                                                  "surname": form.surname.data}})
+                                                                                  "surname": form.surname.data,
+                                                                                  "role" : form.role.data}})
             return redirect(url_for('users'))
         return render_template('admin/change_user.html', title='Change_user', form=form)
     return "Несуществующий login пользователя"
@@ -166,7 +167,7 @@ def change_user(change_username):
 
 @app.get("/")
 def api_index():
-    return "dataunion api v1.0"
+    return "dataunion api v1.1"
 
 app.run(debug=True)
 # app.run(port=5021)
