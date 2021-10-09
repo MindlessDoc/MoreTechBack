@@ -31,9 +31,11 @@ login.init_app(app)
 
 
 class User(UserMixin):
-    def __init__(self, username, password, role):
+    def __init__(self, username, password, name, surname, role):
         self.password_hash = password
         self.username = username
+        self.name = name
+        self.surname = surname
         self.role = role
 
     def get_username(self):
@@ -76,5 +78,8 @@ def login():
 def index():
     return current_user.get_role()
 
+@app.route("/users", methods=["GET", "POST"])
+def user():
+    return render_template("users/users.html", users=collections_users.find())
 
 app.run(debug=True)
