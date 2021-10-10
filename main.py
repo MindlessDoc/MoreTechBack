@@ -211,7 +211,12 @@ def get_tasks():
         task["_id"] = str(task["_id"])
         task["user_id"] = str(task["user_id"])
         task["dataset_id"] = str(task["dataset_id"])
-        if datetime.today() - task["date"] < timedelta(seconds=randint(120, 400)):
+        if (datetime.today() - task["date"]) > timedelta(seconds=randint(120, 400)):
+            collections_tasks.update_one({"_id": task["_id"]}, {
+                "$set": {
+                    "status": "done"
+                }
+            })
             task["status"] = "done"
     return jsonify(list(tasks))
 
