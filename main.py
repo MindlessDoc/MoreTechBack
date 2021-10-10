@@ -202,10 +202,15 @@ def change_user(change_username):
     return "Несуществующий login пользователя"
 
 
-@app.get("/get_tasks")
+@app.post("/get_tasks")
 @jwt_required(request)
 def get_tasks():
-    return collections_tasks.find()
+    user_form = request.get_json()
+    tasks = list(collections_tasks.find({"user_id": ObjectId(user_form["user_id"])}))
+    for task in tasks:
+        task["_id"] = str(task["_id"])
+        task["user_id"] = str(task["user_id"])
+    return jsonify(list(tasks))
 
 
 @app.get("/")
