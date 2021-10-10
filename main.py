@@ -162,9 +162,11 @@ def edit_dataset(id):
 @jwt_required(request)
 def search_datasets_by_name(name):
     current_time = time.time()
-    my_name = re.compile(f"^{name}.*", re.I)
+    condition = re.compile(f"^{name}.*", re.I)
 
-    datasets = list(collections_datasets.find({"name": {'$regex': my_name}}))
+    datasets = list(
+        collections_datasets.find({"$or": [{"name": {'$regex': condition}},
+                                           {"category": {'$regex': condition}}]}))
     for dataset in datasets:
         dataset["_id"] = str(dataset["_id"])
     return jsonify({"date": round(time.time() - current_time, 3), "datasets": datasets})
@@ -244,7 +246,7 @@ def get_task():
 @jwt_required(request)
 def add_task():
     task_form = request.get_json()
-    collections_tasks.insert_one({
+    last_id = collections_tasks.insert_one({
         "user_id": ObjectId(task_form["user_id"]),
         "dataset_id": ObjectId(task_form["dataset_id"]),
         "dataset_name": task_form["dataset_name"],
@@ -252,7 +254,7 @@ def add_task():
         "task_id": len(list(collections_tasks.find())) + 1,
         "date": datetime.today()
     })
-    return "", 200
+    return str(last_id), 200
 
 
 @app.get("/")
