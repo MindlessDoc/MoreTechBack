@@ -172,6 +172,18 @@ def search_datasets_by_name(name):
     return jsonify({"date": round(time.time() - current_time, 3), "datasets": datasets})
 
 
+@app.route('/get_pop', methods=["GET", "POST"])
+@jwt_required(request)
+def get_pop():
+    most_popular = list(collections_datasets.aggregate([
+        {"$sort": {"views": -1}},
+        {"$limit": 10}]))
+
+    for now in most_popular:
+        now["_id"] = str(now["_id"])
+    return jsonify(most_popular)
+
+
 @app.get("/search_dataset/<id>")
 @jwt_required(request)
 def search_dataset_by_id(id):
