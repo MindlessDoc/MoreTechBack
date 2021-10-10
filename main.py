@@ -6,6 +6,7 @@ from forms import *
 from flask_cors import CORS
 from bson.objectid import ObjectId
 from datetime import timedelta, datetime
+from random import randint
 import time
 import functools
 import jwt
@@ -202,7 +203,7 @@ def change_user(change_username):
 
 
 @app.post("/get_tasks")
-# @jwt_required(request)
+@jwt_required(request)
 def get_tasks():
     user_form = request.get_json()
     tasks = list(collections_tasks.find({"user_id": ObjectId(user_form["user_id"])}))
@@ -210,12 +211,13 @@ def get_tasks():
         task["_id"] = str(task["_id"])
         task["user_id"] = str(task["user_id"])
         task["dataset_id"] = str(task["dataset_id"])
-        print(datetime.today() - task["date"])
+        if datetime.today() - task["date"] < timedelta(seconds=randint(120, 400)):
+            task["status"] = "done"
     return jsonify(list(tasks))
 
 
 @app.post("/add_task")
-# @jwt_required(request)
+@jwt_required(request)
 def add_task():
     task_form = request.get_json()
     collections_tasks.insert_one({
