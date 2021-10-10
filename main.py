@@ -1,15 +1,14 @@
 from flask import Flask, redirect, flash, render_template, url_for, jsonify, request
 from pymongo import MongoClient
 from flask_login import login_required, login_user, current_user, UserMixin, LoginManager
-from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.security import check_password_hash
 from forms import *
 from flask_cors import CORS
 from bson.objectid import ObjectId
-from datetime import timedelta, datetime
+from datetime import timedelta
 import time
 import functools
 import jwt
-from random import randint
 import re
 import os
 
@@ -220,7 +219,6 @@ def api_index():
 
 
 @app.post("/login_jwt")
-@jwt_required(request)
 def login_jwt():
     user_data = request.get_json()
     login = user_data["login"]
@@ -229,7 +227,7 @@ def login_jwt():
     if collections_users.count_documents({"username": login}):
         if check_password_hash(collections_users.find_one({"username": login})["password"], password):
             user = collections_users.find_one({"username": login})
-            encoded_jwt = jwt.encode({"role": user["role"], "name": user["name"], "surname": user["surname"],
+            encoded_jwt = jwt.encode({"user_id": str(user["_id"]), "role": user["role"], "name": user["name"], "surname": user["surname"],
                                       "change_dataset": user["change_dataset"], "read_dataset": user["read_dataset"]},
                                      "secret", algorithm="HS256")
             return encoded_jwt
