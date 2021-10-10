@@ -319,7 +319,7 @@ def give_vote():
     collections_datasets.update_one({"_id": ObjectId(vote_form["id"])},
                                     {"$inc": {
                                         "sum_score": vote_form["vote"],
-                                        "vote_count": 1
+                                        "count_score": 1
                                     }})
     dataset = collections_datasets.find_one({"_id": ObjectId(vote_form["id"])})
     collections_datasets.update_one({"_id": ObjectId(vote_form["id"])},
