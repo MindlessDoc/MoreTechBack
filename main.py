@@ -7,6 +7,7 @@ from flask_cors import CORS
 from bson.objectid import ObjectId
 from datetime import timedelta, datetime
 import time
+import functools
 import jwt
 from random import randint
 import re
@@ -17,7 +18,6 @@ app = Flask(__name__)
 app.config["SECRET_KEY"] = "86F27F78E9AA221425B98B46F337A"
 app.permanent_session_lifetime = timedelta(days=1)
 
-app = Flask(__name__)
 cors = CORS(app)
 app.secret_key = os.urandom(24)
 
@@ -67,6 +67,20 @@ class User(UserMixin):
         loaded_user = collections_admins.find_one({"username": username})
         return User(loaded_user["_id"], loaded_user["username"], loaded_user["password"], loaded_user["name"],
                     loaded_user["surname"], loaded_user["role"])
+
+
+def jwt_required(request):
+    def jwt_req(func):
+        @functools.wraps(func)
+        def main_function():
+            try:
+                jwt.decode(request.headers["Application-Authorization"], "secret", algorithms="HS256")
+                print(jwt.decode(request.headers["Application-Authorization"], "secret", algorithms="HS256"))
+                return func()
+            except Exception as e:
+                return "Signature verification failed", 403
+        return main_function
+    return jwt_req
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -137,6 +151,7 @@ def edit_dataset(id):
 
 
 @app.get("/search_datasets/<name>")
+@jwt_required(request)
 def search_datasets_by_name(name):
     current_time = time.time()
     my_name = re.compile(f"^{name}.*", re.I)
@@ -148,6 +163,7 @@ def search_datasets_by_name(name):
 
 
 @app.get("/search_dataset/<id>")
+@jwt_required(request)
 def search_dataset_by_id(id):
     dataset = collections_datasets.find_one({"_id": ObjectId(id)})
     dataset["_id"] = str(dataset["_id"])
@@ -155,6 +171,7 @@ def search_dataset_by_id(id):
 
 
 @app.get("/random_dataset")
+@jwt_required(request)
 def random_dataset():
     return jsonify(list(map(lambda x: x["name"], collections_datasets.aggregate([{"$sample": {"size": 5}}]))))
 
@@ -185,16 +202,19 @@ def change_user(change_username):
 
 
 @app.get("/get_tasks")
+@jwt_required(request)
 def get_tasks():
     return collections_tasks.find()
 
 
 @app.get("/")
+@jwt_required(request)
 def api_index():
-    return "dataunion api v1.12"
+    return "dataunion api v1.13"
 
 
 @app.post("/login_jwt")
+@jwt_required(request)
 def login_jwt():
     user_data = request.get_json()
     login = user_data["login"]
@@ -206,7 +226,9 @@ def login_jwt():
             encoded_jwt = jwt.encode({"role": user["role"], "name": user["name"], "surname": user["surname"],
                                       "change_dataset": user["change_dataset"], "read_dataset": user["read_dataset"]},
                                      "secret", algorithm="HS256")
-            print(encoded_jwt)
+            print(jwt.decode(encoded_jwt, "secret", algorithms="HS256"))
+            test = encoded_jwt
+            print(test)
             return encoded_jwt
         return "Wrong password", 400
     return "User not found", 403
