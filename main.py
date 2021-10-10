@@ -233,7 +233,7 @@ def login_jwt():
 
 
 @app.post("/give_vote")
-# @jwt_required(request)
+@jwt_required(request)
 def give_vote():
     vote_form = request.get_json()
     collections_datasets.update_one({"_id": ObjectId(vote_form["id"])},
