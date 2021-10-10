@@ -5,7 +5,7 @@ link: https://api.dataunion.flint3s.online/admin
 login: admin
 password: admin
 
-Данные для входа фронтент:
+Данные для входа frontend:
 link: https://dataunion.flint3s.online/
 login: tkv
 password: admin
