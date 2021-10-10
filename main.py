@@ -159,16 +159,17 @@ def edit_dataset(id):
 
 
 @app.get("/search_datasets/<name>")
-@jwt_required(request)
+# @jwt_required(request)
 def search_datasets_by_name(name):
     current_time = time.time()
     condition = re.compile(f"^{name}.*", re.I)
 
     datasets = list(
         collections_datasets.find({"$or": [{"name": {'$regex': condition}},
-                                           {"category": {'$regex': condition}}]}))
+                                           {"category": [{'$regex': condition}]}]}))
+    print(datasets)
     collections_datasets.update({"$or": [{"name": {'$regex': condition}},
-                                         {"category": {'$regex': condition}}]},
+                                         {"category": condition}]},
                                 {"$inc": {
                                     "views": 1
                                 }})
@@ -318,7 +319,7 @@ def give_vote():
     collections_datasets.update_one({"_id": ObjectId(vote_form["id"])},
                                     {"$inc": {
                                         "sum_score": vote_form["vote"],
-                                        "count_score": 1
+                                        "vote_count": 1
                                     }})
     dataset = collections_datasets.find_one({"_id": ObjectId(vote_form["id"])})
     collections_datasets.update_one({"_id": ObjectId(vote_form["id"])},
