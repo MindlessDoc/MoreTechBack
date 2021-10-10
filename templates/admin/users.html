@@ -28,18 +28,21 @@
                         <div>
                             ({{ user["role"] }})
                             <div>
-                                {% if  user["read_dataset"]%}
-                                    read_dataset: On,
+                                {% if  user["read_dataset"] %}
+                                    read_dataset:
+                                    <nobr style="color:green; white-space: nowrap">On,</nobr>
                                 {% else %}
-                                    read_dataset: Off,
+                                        read_dataset:
+                                    <nobr style="color:red; white-space: nowrap">Off,</nobr>
                                 {% endif %}
-                                {% if  user["change_dataset"]%}
-                                    change_dataset: On
+                                {% if  user["change_dataset"] %}
+                                        change_dataset:
+                                    <nobr style="color:green; white-space: nowrap">On</nobr>
                                 {% else %}
-                                    change_dataset: Off
+                                        change_dataset:
+                                    <nobr style="color:red; white-space: nowrap">Off</nobr>
                                 {% endif %}
                             </div>
-
                         </div>
 
                     </div>
