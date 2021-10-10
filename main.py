@@ -72,10 +72,10 @@ class User(UserMixin):
 def jwt_required(request):
     def jwt_req(func):
         @functools.wraps(func)
-        def main_function():
+        def main_function(*args, **kwargs):
             try:
                 jwt.decode(request.headers["Application-Authorization"], "secret", algorithms="HS256")
-                return func()
+                return func(*args, **kwargs)
             except Exception as e:
                 return "Signature verification failed", 403
         return main_function
