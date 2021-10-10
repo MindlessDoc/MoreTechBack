@@ -159,17 +159,17 @@ def edit_dataset(id):
 
 
 @app.get("/search_datasets/<name>")
-# @jwt_required(request)
+@jwt_required(request)
 def search_datasets_by_name(name):
     current_time = time.time()
     condition = re.compile(f"^{name}.*", re.I)
 
     datasets = list(
         collections_datasets.find({"$or": [{"name": {'$regex': condition}},
-                                           {"category": [{'$regex': condition}]}]}))
-    print(datasets)
+                                           {"categories": {'$regex': condition}}]}))
+
     collections_datasets.update({"$or": [{"name": {'$regex': condition}},
-                                         {"category": condition}]},
+                                         {"categories": {'$regex': condition}}]},
                                 {"$inc": {
                                     "views": 1
                                 }})
