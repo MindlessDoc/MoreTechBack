@@ -251,6 +251,15 @@ def get_task():
     task["_id"] = str(task["_id"])
     task["user_id"] = str(task["user_id"])
     task["dataset_id"] = str(task["dataset_id"])
+    if (datetime.today() - task["date"]) > timedelta(seconds=randint(120, 400)):
+        collections_tasks.update_one({"_id": ObjectId(task["_id"])}, {
+            "$set": {
+                "status": "done"
+            }
+        })
+        price_update(collections_tasks, ObjectId(task["_id"]))
+        task["status"] = "done"
+        task["price"] = default_price
     return jsonify(task)
 
 
