@@ -78,7 +78,9 @@ def jwt_required(request):
                 return func(*args, **kwargs)
             except Exception as e:
                 return "Signature verification failed", 403
+
         return main_function
+
     return jwt_req
 
 
@@ -228,6 +230,23 @@ def login_jwt():
             return encoded_jwt
         return "Wrong password", 400
     return "User not found", 403
+
+
+@app.post("/give_vote")
+# @jwt_required(request)
+def give_vote():
+    vote_form = request.get_json()
+    collections_datasets.update_one({"_id": ObjectId(vote_form["id"])},
+                                    {"$inc": {
+                                        "sum_score": vote_form["vote"],
+                                        "count_score": 1
+                                    }})
+    dataset = collections_datasets.find_one({"_id": ObjectId(vote_form["id"])})
+    collections_datasets.update_one({"_id": ObjectId(vote_form["id"])},
+                                    {"$set": {
+                                        "score": round(dataset["sum_score"] / dataset["count_score"] * 10, 1)
+                                    }})
+    return "", 200
 
 
 app.run(debug=True)
