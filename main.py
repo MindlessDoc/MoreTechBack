@@ -44,6 +44,7 @@ login.init_app(app)
 
 
 class User(UserMixin):
+
     def __init__(self, id, username, password, name, surname, role):
         self.password_hash = password
         self.username = username
@@ -69,6 +70,10 @@ class User(UserMixin):
         loaded_user = collections_admins.find_one({"username": username})
         return User(loaded_user["_id"], loaded_user["username"], loaded_user["password"], loaded_user["name"],
                     loaded_user["surname"], loaded_user["role"])
+
+
+def price_update(collections_tasks, task_id):
+    collections_tasks.update_one({"_id": task_id}, {"$set": {"price": default_price}})
 
 
 def jwt_required(request):
@@ -214,16 +219,25 @@ def get_tasks():
         task["user_id"] = str(task["user_id"])
         task["dataset_id"] = str(task["dataset_id"])
         if (datetime.today() - task["date"]) > timedelta(seconds=randint(120, 400)):
-            collections_tasks.update_one({"_id": task["_id"]}, {
+            collections_tasks.update_one({"_id": ObjectId(task["_id"])}, {
                 "$set": {
                     "status": "done"
                 }
             })
+            price_update(collections_tasks, ObjectId(task["_id"]))
             task["status"] = "done"
+            task["price"] = default_price
     return jsonify(list(tasks))
 
-def price_update(collections_tasks, task_id):
-    collections_tasks.update({"price": task_id}, {"$set": {"price": default_price}})
+
+@app.post("/get_task")
+@jwt_required(request)
+def get_task():
+    task = collections_tasks.find_one({"_id": ObjectId(request.get_json()["task_id"])})
+    task["_id"] = str(task["_id"])
+    task["user_id"] = str(task["user_id"])
+    task["dataset_id"] = str(task["dataset_id"])
+    return jsonify(task)
 
 
 @app.post("/add_task")
