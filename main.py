@@ -266,7 +266,7 @@ def add_task():
         "task_id": len(list(collections_tasks.find())) + 1,
         "date": datetime.today()
     })
-    return str(last_id["insertedId"]), 200
+    return str(last_id.inserted_id), 200
 
 
 @app.get("/")
