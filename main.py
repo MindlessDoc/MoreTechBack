@@ -75,7 +75,6 @@ def jwt_required(request):
         def main_function():
             try:
                 jwt.decode(request.headers["Application-Authorization"], "secret", algorithms="HS256")
-                print(jwt.decode(request.headers["Application-Authorization"], "secret", algorithms="HS256"))
                 return func()
             except Exception as e:
                 return "Signature verification failed", 403
@@ -226,9 +225,6 @@ def login_jwt():
             encoded_jwt = jwt.encode({"role": user["role"], "name": user["name"], "surname": user["surname"],
                                       "change_dataset": user["change_dataset"], "read_dataset": user["read_dataset"]},
                                      "secret", algorithm="HS256")
-            print(jwt.decode(encoded_jwt, "secret", algorithms="HS256"))
-            test = encoded_jwt
-            print(test)
             return encoded_jwt
         return "Wrong password", 400
     return "User not found", 403
