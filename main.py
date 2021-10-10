@@ -167,6 +167,11 @@ def search_datasets_by_name(name):
     datasets = list(
         collections_datasets.find({"$or": [{"name": {'$regex': condition}},
                                            {"category": {'$regex': condition}}]}))
+    collections_datasets.update({"$or": [{"name": {'$regex': condition}},
+                                         {"category": {'$regex': condition}}]},
+                                {"$inc": {
+                                    "views": 1
+                                }})
     for dataset in datasets:
         dataset["_id"] = str(dataset["_id"])
     return jsonify({"date": round(time.time() - current_time, 3), "datasets": datasets})
@@ -189,6 +194,10 @@ def get_pop():
 def search_dataset_by_id(id):
     dataset = collections_datasets.find_one({"_id": ObjectId(id)})
     dataset["_id"] = str(dataset["_id"])
+    collections_datasets.update_one({"_id": ObjectId(id)},
+                                    {"$inc": {
+                                        "views": 1
+                                    }})
     return jsonify(dataset)
 
 
