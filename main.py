@@ -36,6 +36,8 @@ categories = ["Изображения", "Финансы", "География", 
 types = ["Агрегация данных", "Необработанный датасет", "Сырые данные"]
 access_rights = ["read_dataset", "change_dataset"]
 
+default_price = 5000
+
 login = LoginManager(app)
 login.login_view = "login"
 login.init_app(app)
@@ -214,6 +216,9 @@ def get_tasks():
         if datetime.today() - task["date"] < timedelta(seconds=randint(120, 400)):
             task["status"] = "done"
     return jsonify(list(tasks))
+
+def price_update(collections_tasks, task_id):
+    collections_tasks.update({"price": task_id}, {"$set": {"price": default_price}})
 
 
 @app.post("/add_task")
