@@ -5,7 +5,7 @@ from werkzeug.security import check_password_hash
 from forms import *
 from flask_cors import CORS
 from bson.objectid import ObjectId
-from datetime import timedelta
+from datetime import timedelta, datetime
 import time
 import functools
 import jwt
@@ -202,14 +202,31 @@ def change_user(change_username):
 
 
 @app.post("/get_tasks")
-@jwt_required(request)
+# @jwt_required(request)
 def get_tasks():
     user_form = request.get_json()
     tasks = list(collections_tasks.find({"user_id": ObjectId(user_form["user_id"])}))
     for task in tasks:
         task["_id"] = str(task["_id"])
         task["user_id"] = str(task["user_id"])
+        task["dataset_id"] = str(task["dataset_id"])
+        print(datetime.today() - task["date"])
     return jsonify(list(tasks))
+
+
+@app.post("/add_task")
+# @jwt_required(request)
+def add_task():
+    task_form = request.get_json()
+    collections_tasks.insert_one({
+        "user_id": ObjectId(task_form["user_id"]),
+        "dataset_id": ObjectId(task_form["dataset_id"]),
+        "dataset_name": task_form["dataset_name"],
+        "status": "in_progress",
+        "task_id": len(list(collections_tasks.find())) + 1,
+        "date": datetime.today()
+    })
+    return "", 200
 
 
 @app.get("/")
@@ -227,9 +244,10 @@ def login_jwt():
     if collections_users.count_documents({"username": login}):
         if check_password_hash(collections_users.find_one({"username": login})["password"], password):
             user = collections_users.find_one({"username": login})
-            encoded_jwt = jwt.encode({"user_id": str(user["_id"]), "role": user["role"], "name": user["name"], "surname": user["surname"],
-                                      "change_dataset": user["change_dataset"], "read_dataset": user["read_dataset"]},
-                                     "secret", algorithm="HS256")
+            encoded_jwt = jwt.encode(
+                {"user_id": str(user["_id"]), "role": user["role"], "name": user["name"], "surname": user["surname"],
+                 "change_dataset": user["change_dataset"], "read_dataset": user["read_dataset"]},
+                "secret", algorithm="HS256")
             return encoded_jwt
         return "Wrong password", 400
     return "User not found", 403
